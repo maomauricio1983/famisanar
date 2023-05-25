@@ -1,5 +1,6 @@
 package com.maoamuricio.app.famisanar.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class Address {
 
 
 //    @OneToMany(mappedBy = "address",cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     @OneToMany(mappedBy = "address")
     List<Person> persons;
 

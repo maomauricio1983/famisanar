@@ -40,9 +40,16 @@ public class StudentController {
     @PostMapping("/crear")
     public ResponseEntity<Student> crear(@RequestBody Student student) {
 
+        Optional<Address> address = Optional.ofNullable(student.getAddress());
+        if (address.isPresent()) {
+            addressService.guardar(student.getAddress());
+            student.setAddress(student.getAddress());
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body((Student) service.guardar(student));
-    }
+
+        service.guardar(student);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(student);    }
 
 
     @PutMapping("/{id}")

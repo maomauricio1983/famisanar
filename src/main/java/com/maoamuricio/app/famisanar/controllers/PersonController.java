@@ -1,7 +1,9 @@
 package com.maoamuricio.app.famisanar.controllers;
 
 
+import com.maoamuricio.app.famisanar.models.entities.Address;
 import com.maoamuricio.app.famisanar.models.entities.Person;
+import com.maoamuricio.app.famisanar.models.services.AddressService;
 import com.maoamuricio.app.famisanar.models.services.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,8 +22,13 @@ public class PersonController {
     @Autowired
     private PersonService service;
 
+    @Autowired
+    private AddressService addressService;
+
     @GetMapping("/listar")
-    public List<Person> findAll(){return service.listar(); }
+    public List<Person> findAll() {
+        return service.listar();
+    }
 
 
     @GetMapping("/{id}")
@@ -34,24 +41,32 @@ public class PersonController {
     public ResponseEntity<Person> crear(@RequestBody Person person) {
 
 
-        return ResponseEntity.status(HttpStatus.CREATED).body((Person) service.guardar(person));
+        Optional<Address> address = Optional.ofNullable(person.getAddress());
+        if (address.isPresent()) {
+            addressService.guardar(person.getAddress());
+            person.setAddress(person.getAddress());
+        }
+
+
+        service.guardar(person);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(person);
     }
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Person> editar( @RequestBody Person person,@PathVariable Long id) {
-
+    public ResponseEntity<Person> editar(@RequestBody Person person, @PathVariable Long id) {
 
 
         Optional<Person> c = service.encontrar(id);
         if (c.isPresent()) {
-            Person personDb =  c.get();
+            Person personDb = c.get();
 
 
             personDb.setName(person.getName());
             personDb.setPhone(person.getPhone());
             personDb.setEmail(person.getEmail());
-            personDb.setAddress(person.getAddress());
+
 
 
             return ResponseEntity.status(HttpStatus.CREATED).body((Person) service.guardar(personDb));
@@ -61,7 +76,7 @@ public class PersonController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Person> eliminar(@PathVariable Long id){
+    public ResponseEntity<Person> eliminar(@PathVariable Long id) {
         Optional<Person> c = service.encontrar(id);
         if (c.isPresent()) {
             Person personDb = c.get();

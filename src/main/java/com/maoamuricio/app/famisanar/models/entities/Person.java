@@ -17,12 +17,12 @@ public class Person implements Serializable {
 
     private String name;
 
-    private Integer phone;
+
+    private String phone;
 
     private String email;
 
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "fk_address")
     private Address address;
@@ -36,11 +36,11 @@ public class Person implements Serializable {
         this.id = id;
     }
 
-    public Integer getPhone() {
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(Integer phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 

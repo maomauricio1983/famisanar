@@ -1,6 +1,7 @@
 package com.maoamuricio.app.famisanar.controllers;
 
 
+import com.maoamuricio.app.famisanar.models.entities.Address;
 import com.maoamuricio.app.famisanar.models.entities.Professor;
 import com.maoamuricio.app.famisanar.models.services.AddressService;
 import com.maoamuricio.app.famisanar.models.services.ProfessorService;
@@ -39,8 +40,17 @@ public class ProfessorController {
     @PostMapping("/crear")
     public ResponseEntity<Professor> crear(@RequestBody Professor professor) {
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.guardar(professor));
-    }
+
+        Optional<Address> address = Optional.ofNullable(professor.getAddress());
+        if (address.isPresent()) {
+            addressService.guardar(professor.getAddress());
+            professor.setAddress(professor.getAddress());
+        }
+
+
+        service.guardar(professor);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(professor);    }
 
 
     @PutMapping("/{id}")
